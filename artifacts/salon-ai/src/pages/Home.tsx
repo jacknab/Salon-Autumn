@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, Calendar, Clock, Sparkles, Volume2, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Phone, Calendar, Clock, Sparkles, Volume2, ArrowRight, ShieldCheck, CheckCircle2, Star } from "lucide-react";
 import autumnPortrait from "@/assets/images/autumn-portrait.png";
 import luxurySalon from "@/assets/images/luxury-salon.png";
 import clientPhone from "@/assets/images/client-phone.png";
@@ -206,6 +206,154 @@ export default function Home() {
             <div className="relative aspect-square overflow-hidden group">
               <img src={clientPhone} alt="Client smiling on phone" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 grayscale hover:grayscale-0" />
               <div className="absolute inset-0 border border-primary/20 m-6 z-10 pointer-events-none"></div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="py-32 px-6 md:px-12 bg-background relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <FadeIn>
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 border border-primary/30 rounded-full mb-8 bg-background/50 backdrop-blur-sm">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-xs uppercase tracking-widest text-primary font-medium">Introductory Pricing</span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-serif mb-6">Simple, transparent <span className="text-primary italic">pricing.</span></h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-light">
+                Powered by OpenAI Realtime voice AI and Twilio. No hidden fees, no long-term contracts. Cancel anytime.
+              </p>
+            </div>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+
+            {/* Starter */}
+            <FadeIn delay={0.1}>
+              <div className="relative border border-border/60 bg-card p-10 flex flex-col h-full group hover:border-primary/40 transition-colors duration-500" data-testid="pricing-starter">
+                <div className="mb-8">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3">Starter</p>
+                  <div className="flex items-end gap-1 mb-2">
+                    <span className="text-5xl font-serif font-medium">$49</span>
+                    <span className="text-muted-foreground mb-2 font-light">/month</span>
+                  </div>
+                  <p className="text-sm text-primary font-medium">300 minutes included</p>
+                  <p className="text-xs text-muted-foreground mt-1 font-light">~$0.14 per additional minute</p>
+                </div>
+                <div className="border-t border-border/40 pt-8 mb-10 flex-1">
+                  <ul className="space-y-4">
+                    {[
+                      "Autumn answers every call",
+                      "Appointment scheduling",
+                      "Appointment cancellations",
+                      "Pricing & service inquiries",
+                      "Text confirmations to clients",
+                      "1 salon phone number",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground font-light">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button variant="outline" className="w-full rounded-none border-primary/40 hover:border-primary hover:bg-primary/5 text-foreground py-6 transition-all duration-300" data-testid="btn-starter">
+                  Get Started
+                </Button>
+                <p className="text-xs text-center text-muted-foreground mt-4 font-light">Perfect for boutique & solo studios</p>
+              </div>
+            </FadeIn>
+
+            {/* Classic — Featured */}
+            <FadeIn delay={0.2}>
+              <div className="relative border border-primary bg-card p-10 flex flex-col h-full shadow-[0_0_60px_-10px_rgba(201,168,76,0.25)]" data-testid="pricing-classic">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <div className="flex items-center gap-1.5 bg-primary px-5 py-1.5 text-xs uppercase tracking-widest font-semibold text-background">
+                    <Star className="w-3 h-3 fill-background" />
+                    Most Popular
+                  </div>
+                </div>
+                <div className="mb-8 mt-4">
+                  <p className="text-xs uppercase tracking-widest text-primary font-semibold mb-3">Classic</p>
+                  <div className="flex items-end gap-1 mb-2">
+                    <span className="text-5xl font-serif font-medium">$89</span>
+                    <span className="text-muted-foreground mb-2 font-light">/month</span>
+                  </div>
+                  <p className="text-sm text-primary font-medium">600 minutes included</p>
+                  <p className="text-xs text-muted-foreground mt-1 font-light">~$0.14 per additional minute</p>
+                </div>
+                <div className="border-t border-primary/30 pt-8 mb-10 flex-1">
+                  <ul className="space-y-4">
+                    {[
+                      "Everything in Starter",
+                      "Multi-stylist scheduling",
+                      "Waitlist management",
+                      "Cancellation policy enforcement",
+                      "Deposit collection prompts",
+                      "2 salon phone numbers",
+                      "Priority support",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground font-light">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button className="w-full rounded-none bg-primary text-primary-foreground hover:bg-primary/90 py-6 transition-all duration-300" data-testid="btn-classic">
+                  Get Started
+                </Button>
+                <p className="text-xs text-center text-muted-foreground mt-4 font-light">Ideal for established salons</p>
+              </div>
+            </FadeIn>
+
+            {/* Deluxe */}
+            <FadeIn delay={0.3}>
+              <div className="relative border border-border/60 bg-card p-10 flex flex-col h-full group hover:border-primary/40 transition-colors duration-500" data-testid="pricing-deluxe">
+                <div className="mb-8">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3">Deluxe</p>
+                  <div className="flex items-end gap-1 mb-2">
+                    <span className="text-5xl font-serif font-medium">$179</span>
+                    <span className="text-muted-foreground mb-2 font-light">/month</span>
+                  </div>
+                  <p className="text-sm text-primary font-medium">1,200 minutes included</p>
+                  <p className="text-xs text-muted-foreground mt-1 font-light">~$0.14 per additional minute</p>
+                </div>
+                <div className="border-t border-border/40 pt-8 mb-10 flex-1">
+                  <ul className="space-y-4">
+                    {[
+                      "Everything in Classic",
+                      "Unlimited phone numbers",
+                      "VIP client recognition",
+                      "Custom Autumn voice persona",
+                      "Analytics dashboard",
+                      "Dedicated account manager",
+                      "White-glove onboarding",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground font-light">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button variant="outline" className="w-full rounded-none border-primary/40 hover:border-primary hover:bg-primary/5 text-foreground py-6 transition-all duration-300" data-testid="btn-deluxe">
+                  Get Started
+                </Button>
+                <p className="text-xs text-center text-muted-foreground mt-4 font-light">For high-volume multi-chair salons</p>
+              </div>
+            </FadeIn>
+
+          </div>
+
+          {/* Cost transparency note */}
+          <FadeIn delay={0.4}>
+            <div className="mt-12 text-center border border-border/40 bg-card/50 px-8 py-6 max-w-3xl mx-auto">
+              <p className="text-sm text-muted-foreground font-light leading-relaxed">
+                Pricing is based on OpenAI Realtime voice AI at approximately $0.08/min and Twilio telephony at $0.0085/min, with a 60% margin applied to cover infrastructure, support, and ongoing model improvements.
+              </p>
             </div>
           </FadeIn>
         </div>
