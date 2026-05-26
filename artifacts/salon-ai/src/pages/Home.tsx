@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Phone, Calendar, Clock, Sparkles, Volume2, ArrowRight, ShieldCheck, CheckCircle2, Star, MessageSquare, X, TrendingUp, Zap, Users } from "lucide-react";
+import { Phone, Calendar, Clock, Sparkles, Volume2, ArrowRight, ShieldCheck, CheckCircle2, Star, MessageSquare, X, TrendingUp, Zap, Users, ChevronDown } from "lucide-react";
 import luxurySalon from "@/assets/images/luxury-salon.png";
 import clientPhone from "@/assets/images/client-phone.png";
 import { Button } from "@/components/ui/button";
@@ -65,23 +65,35 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/20 selection:text-primary">
       
-      {/* 1. Navigation */}
-      <nav className="fixed top-0 w-full z-50 px-6 py-4 md:px-12 flex justify-between items-center backdrop-blur-md bg-background/80 border-b border-border shadow-sm">
-        <div className="font-sans text-2xl font-bold tracking-tight text-primary flex items-center gap-2">
-          Autumn
-        </div>
-        <div className="hidden md:flex gap-8 text-sm font-medium text-muted-foreground">
-          <span className="hover:text-primary cursor-pointer transition-colors">Features</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">Pricing</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">Demo</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hidden md:flex font-medium rounded-full text-foreground hover:bg-muted" data-testid="nav-demo-btn">
-            Watch Demo
-          </Button>
-          <Button className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-6 font-medium shadow-sm transition-all" data-testid="nav-cta">
-            Get Started
-          </Button>
+      {/* Certxa Header */}
+      <nav className="fixed top-0 w-full z-50 bg-white border-b border-gray-100 shadow-sm" data-testid="certxa-nav">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center h-14 gap-8">
+          {/* Certxa Logo */}
+          <a href="https://certxa.com" target="_blank" rel="noopener noreferrer" className="shrink-0 flex items-center" data-testid="certxa-logo">
+            <span className="text-[#5B3FF8] font-bold text-xl tracking-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              Certxa<span className="text-[#5B3FF8]">.</span>
+            </span>
+          </a>
+
+          {/* Nav Links */}
+          <div className="hidden md:flex items-center gap-1 text-sm flex-1">
+            {/* SalonOS — active page */}
+            <span className="px-3 py-1.5 text-[#5B3FF8] font-semibold cursor-pointer rounded-md hover:bg-[#5B3FF8]/5 transition-colors">
+              SalonOS
+            </span>
+            {[
+              { label: "How It Works", dropdown: true },
+              { label: "Solutions", dropdown: true },
+              { label: "Pricing", dropdown: false },
+              { label: "Customers", dropdown: true },
+              { label: "Resources", dropdown: true },
+            ].map((item) => (
+              <span key={item.label} className="flex items-center gap-0.5 px-3 py-1.5 text-gray-600 hover:text-gray-900 cursor-pointer rounded-md hover:bg-gray-50 transition-colors font-medium">
+                {item.label}
+                {item.dropdown && <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-0.5" />}
+              </span>
+            ))}
+          </div>
         </div>
       </nav>
 
@@ -615,17 +627,72 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 12. Footer */}
-      <footer className="py-12 px-6 md:px-12 bg-white border-t border-border">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="font-sans text-xl font-bold tracking-tight text-primary">Autumn</div>
-          <div className="flex gap-8 text-sm font-bold text-muted-foreground">
-            <span className="hover:text-foreground cursor-pointer transition-colors">Privacy</span>
-            <span className="hover:text-foreground cursor-pointer transition-colors">Terms</span>
-            <span className="hover:text-foreground cursor-pointer transition-colors">Contact</span>
+      {/* Certxa Footer */}
+      <footer className="bg-white border-t border-gray-100 pt-16 pb-8 px-6 md:px-10" data-testid="certxa-footer">
+        <div className="max-w-7xl mx-auto">
+          {/* Top row — logo + columns */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-14">
+            {/* Logo + tagline */}
+            <div className="col-span-2 md:col-span-1">
+              <a href="https://certxa.com" target="_blank" rel="noopener noreferrer" className="inline-block mb-4">
+                <span className="text-[#5B3FF8] font-bold text-xl tracking-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+                  Certxa.
+                </span>
+              </a>
+              <p className="text-sm text-gray-500 leading-relaxed font-medium">
+                The all-in-one platform for modern salons.
+              </p>
+            </div>
+
+            {/* Column: SalonOS */}
+            <div>
+              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4">SalonOS</h4>
+              <ul className="space-y-2.5 text-sm text-gray-500">
+                {["AI Receptionist", "Online Booking", "Client Management", "Staff Scheduling", "Reporting"].map(l => (
+                  <li key={l} className="hover:text-[#5B3FF8] cursor-pointer transition-colors font-medium">{l}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column: Solutions */}
+            <div>
+              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4">Solutions</h4>
+              <ul className="space-y-2.5 text-sm text-gray-500">
+                {["Hair Salons", "Nail Studios", "Spas & Wellness", "Barbershops", "Multi-Location"].map(l => (
+                  <li key={l} className="hover:text-[#5B3FF8] cursor-pointer transition-colors font-medium">{l}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column: Company */}
+            <div>
+              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4">Company</h4>
+              <ul className="space-y-2.5 text-sm text-gray-500">
+                {["About", "Customers", "Blog", "Careers", "Contact"].map(l => (
+                  <li key={l} className="hover:text-[#5B3FF8] cursor-pointer transition-colors font-medium">{l}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column: Resources */}
+            <div>
+              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4">Resources</h4>
+              <ul className="space-y-2.5 text-sm text-gray-500">
+                {["Help Center", "API Docs", "Status", "Privacy Policy", "Terms of Service"].map(l => (
+                  <li key={l} className="hover:text-[#5B3FF8] cursor-pointer transition-colors font-medium">{l}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div className="text-sm font-medium text-muted-foreground">
-            © {new Date().getFullYear()} Autumn AI. All rights reserved.
+
+          {/* Bottom row */}
+          <div className="border-t border-gray-100 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-gray-400 font-medium">© {new Date().getFullYear()} Certxa. All rights reserved.</p>
+            <div className="flex gap-6 text-sm text-gray-400 font-medium">
+              <span className="hover:text-[#5B3FF8] cursor-pointer transition-colors">Privacy</span>
+              <span className="hover:text-[#5B3FF8] cursor-pointer transition-colors">Terms</span>
+              <span className="hover:text-[#5B3FF8] cursor-pointer transition-colors">Security</span>
+            </div>
           </div>
         </div>
       </footer>
