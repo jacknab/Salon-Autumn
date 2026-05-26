@@ -1,9 +1,150 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Phone, Calendar, Clock, Sparkles, Volume2, ArrowRight, ShieldCheck, CheckCircle2, Star, MessageSquare, X, TrendingUp, Zap, Users, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, Calendar, Clock, Sparkles, Volume2, ArrowRight, ShieldCheck, CheckCircle2, Star, MessageSquare, X, TrendingUp, Zap, Users, ChevronDown, PhoneCall } from "lucide-react";
 import luxurySalon from "@/assets/images/luxury-salon.png";
 import clientPhone from "@/assets/images/client-phone.png";
 import { Button } from "@/components/ui/button";
+
+function DemoModal({ onClose }: { onClose: () => void }) {
+  const [phone, setPhone] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [result, setResult] = useState<{ demoNumber: string; message: string } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(e.target.value.replace(/\D/g, "").slice(0, 10));
+  };
+
+  const formatted = phone.length >= 7
+    ? `(${phone.slice(0,3)}) ${phone.slice(3,6)}-${phone.slice(6)}`
+    : phone.length >= 4
+    ? `(${phone.slice(0,3)}) ${phone.slice(3)}`
+    : phone.length > 0
+    ? `(${phone}`
+    : "";
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (phone.length !== 10) {
+      setErrorMsg("Please enter your full 10-digit phone number.");
+      return;
+    }
+    setStatus("loading");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error ?? "Something went wrong. Please try again.");
+        setStatus("error");
+        return;
+      }
+      setResult(data);
+      setStatus("success");
+    } catch {
+      setErrorMsg("Unable to connect. Please try again.");
+      setStatus("error");
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 16 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 z-10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button onClick={onClose} className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 transition-colors" data-testid="modal-close">
+            <X className="w-5 h-5" />
+          </button>
+
+          {status !== "success" ? (
+            <>
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+                <PhoneCall className="w-6 h-6 text-primary" />
+              </div>
+              <h2 className="text-2xl font-extrabold text-foreground mb-2">Try Autumn Free</h2>
+              <p className="text-muted-foreground font-medium mb-8">
+                Enter your phone number and we'll give you a number to call for a live <strong className="text-foreground">5-minute demo</strong> with Autumn.
+              </p>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-foreground mb-2">Your Phone Number</label>
+                  <input
+                    ref={inputRef}
+                    type="tel"
+                    inputMode="numeric"
+                    value={formatted}
+                    onChange={handleInput}
+                    placeholder="(555) 867-5309"
+                    className="w-full border border-border rounded-2xl px-4 py-3.5 text-lg font-semibold text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                    data-testid="demo-phone-input"
+                  />
+                  {errorMsg && (
+                    <p className="text-red-500 text-sm font-medium mt-2">{errorMsg}</p>
+                  )}
+                </div>
+                <Button
+                  type="submit"
+                  disabled={status === "loading" || phone.length !== 10}
+                  className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 py-6 text-base font-bold shadow-md disabled:opacity-50 transition-all"
+                  data-testid="demo-submit-btn"
+                >
+                  {status === "loading" ? "Registering…" : "Get My Demo Number"}
+                </Button>
+                <p className="text-xs text-center text-muted-foreground font-medium">
+                  US numbers only. We'll only use this number to verify your demo call.
+                </p>
+              </form>
+            </>
+          ) : (
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-[#2ECC71]/15 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 className="w-7 h-7 text-[#2ECC71]" />
+              </div>
+              <h2 className="text-2xl font-extrabold text-foreground mb-3">You're all set!</h2>
+              <p className="text-muted-foreground font-medium mb-8">{result?.message}</p>
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-2">Call this number</p>
+                <p className="text-4xl font-extrabold text-primary tracking-tight">{result?.demoNumber}</p>
+                <p className="text-sm text-muted-foreground font-medium mt-2">From the phone number you entered above</p>
+              </div>
+              <p className="text-xs text-muted-foreground font-medium">
+                Your demo lasts up to 5 minutes. Autumn will handle your call exactly as she would for a real salon client.
+              </p>
+              <Button onClick={onClose} className="mt-6 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-5 font-bold w-full" data-testid="demo-close-btn">
+                Done
+              </Button>
+            </div>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
 
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
   return (
@@ -62,8 +203,13 @@ function ActivityFeed() {
 }
 
 export default function Home() {
+  const [demoOpen, setDemoOpen] = useState(false);
+  const openDemo = () => setDemoOpen(true);
+  const closeDemo = () => setDemoOpen(false);
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/20 selection:text-primary">
+      {demoOpen && <DemoModal onClose={closeDemo} />}
       
       {/* Certxa Header */}
       <nav className="fixed top-0 w-full z-50 bg-white border-b border-gray-100 shadow-sm" data-testid="certxa-nav">
@@ -119,8 +265,8 @@ export default function Home() {
             </FadeIn>
             <FadeIn delay={0.3}>
               <div className="flex flex-wrap items-center gap-4">
-                <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-base font-bold shadow-md hover:shadow-lg transition-all" data-testid="hero-cta">
-                  Start Free Trial
+                <Button onClick={openDemo} size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-base font-bold shadow-md hover:shadow-lg transition-all" data-testid="hero-cta">
+                  Try Free Demo
                 </Button>
                 <Button size="lg" variant="ghost" className="rounded-full px-8 py-6 text-base font-medium text-foreground hover:bg-muted transition-all group" data-testid="hero-demo">
                   Watch Demo <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -488,8 +634,8 @@ export default function Home() {
                      </li>
                   ))}
                 </ul>
-                <Button variant="outline" className="w-full rounded-full font-bold py-6 text-base" data-testid="btn-starter">
-                  Get Started
+                <Button onClick={openDemo} variant="outline" className="w-full rounded-full font-bold py-6 text-base" data-testid="btn-starter">
+                  Try Free Demo
                 </Button>
               </div>
             </FadeIn>
@@ -525,8 +671,8 @@ export default function Home() {
                      </li>
                   ))}
                 </ul>
-                <Button className="w-full rounded-full font-bold py-6 text-base bg-primary text-primary-foreground hover:bg-primary/90 shadow-md" data-testid="btn-classic">
-                  Get Started
+                <Button onClick={openDemo} className="w-full rounded-full font-bold py-6 text-base bg-primary text-primary-foreground hover:bg-primary/90 shadow-md" data-testid="btn-classic">
+                  Try Free Demo
                 </Button>
               </div>
             </FadeIn>
@@ -557,8 +703,8 @@ export default function Home() {
                      </li>
                   ))}
                 </ul>
-                <Button variant="outline" className="w-full rounded-full font-bold py-6 text-base" data-testid="btn-deluxe">
-                  Get Started
+                <Button onClick={openDemo} variant="outline" className="w-full rounded-full font-bold py-6 text-base" data-testid="btn-deluxe">
+                  Try Free Demo
                 </Button>
               </div>
             </FadeIn>
@@ -612,15 +758,15 @@ export default function Home() {
             <h2 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-6">Your phone is ringing.<br/>Is Autumn there?</h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-xl text-muted-foreground font-medium mb-10">Start your free trial today. No credit card required.</p>
+            <p className="text-xl text-muted-foreground font-medium mb-10">Call Autumn yourself — enter your number and get a live demo in seconds.</p>
           </FadeIn>
           <FadeIn delay={0.2}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-7 text-lg font-bold shadow-md hover:shadow-lg transition-all" data-testid="footer-cta-primary">
-                Start Free Trial
+              <Button onClick={openDemo} size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-7 text-lg font-bold shadow-md hover:shadow-lg transition-all" data-testid="footer-cta-primary">
+                Try Free Demo
               </Button>
               <Button size="lg" variant="ghost" className="rounded-full px-10 py-7 text-lg font-bold text-foreground hover:bg-muted transition-all" data-testid="footer-cta-secondary">
-                Schedule a Demo
+                Talk to Sales
               </Button>
             </div>
           </FadeIn>

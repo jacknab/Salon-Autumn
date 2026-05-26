@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: demo
+    description: Demo signup operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /demo:
+    post:
+      operationId: registerDemo
+      tags: [demo]
+      summary: Register for a free demo
+      description: Stores the caller's phone number and returns the demo number to dial
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DemoSignupInput"
+      responses:
+        "201":
+          description: Demo registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DemoSignupResult"
+        "400":
+          description: Invalid phone number
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Phone number already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +66,31 @@ components:
           type: string
       required:
         - status
-
+    DemoSignupInput:
+      type: object
+      required:
+        - phone
+      properties:
+        phone:
+          type: string
+          description: 10-digit US phone number (digits only)
+          pattern: "^[0-9]{10}$"
+    DemoSignupResult:
+      type: object
+      required:
+        - demoNumber
+        - message
+      properties:
+        demoNumber:
+          type: string
+          description: The phone number to dial for the 5-minute demo call
+        message:
+          type: string
+          description: Instructions for the demo
+    ApiError:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
