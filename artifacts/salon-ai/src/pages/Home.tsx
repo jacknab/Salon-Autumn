@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Phone, Calendar, Clock, Sparkles, Volume2, ArrowRight, ShieldCheck, CheckCircle2, Star, MessageSquare, X, TrendingUp, Zap, Users } from "lucide-react";
-import autumnPortrait from "@/assets/images/autumn-portrait.png";
 import luxurySalon from "@/assets/images/luxury-salon.png";
 import clientPhone from "@/assets/images/client-phone.png";
 import { Button } from "@/components/ui/button";
@@ -198,17 +197,51 @@ export default function Home() {
       <section className="py-24 px-6 md:px-12 bg-card">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <FadeIn>
-            <div className="relative rounded-[2rem] overflow-hidden shadow-xl border border-border aspect-[4/5] bg-white group">
-              <img src={autumnPortrait} alt="Autumn AI" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute bottom-0 inset-x-0 p-6 bg-white/80 backdrop-blur-md border-t border-white/20">
-                <div className="flex items-center justify-between">
+            <div className="rounded-[2rem] shadow-xl border border-border bg-white p-8 flex flex-col gap-6">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-extrabold text-xl">A</div>
                   <div>
-                    <h3 className="font-bold text-xl text-foreground">Autumn</h3>
-                    <p className="text-sm font-medium text-muted-foreground">AI Receptionist</p>
+                    <div className="font-extrabold text-lg text-foreground">Autumn</div>
+                    <div className="text-sm text-muted-foreground font-medium">AI Receptionist</div>
                   </div>
-                  <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm text-sm font-bold text-foreground">
-                    <div className="w-2 h-2 rounded-full bg-[#2ECC71] animate-pulse" /> Online now
+                </div>
+                <div className="flex items-center gap-2 bg-[#2ECC71]/10 text-[#16a34a] px-4 py-2 rounded-full text-sm font-bold">
+                  <div className="w-2 h-2 rounded-full bg-[#2ECC71] animate-pulse" /> Online now
+                </div>
+              </div>
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { label: "Calls Today", value: "47" },
+                  { label: "Response", value: "<2s" },
+                  { label: "Answer Rate", value: "100%" },
+                ].map((s, i) => (
+                  <div key={i} className="bg-muted/50 rounded-2xl p-4 text-center">
+                    <div className="text-2xl font-extrabold text-foreground">{s.value}</div>
+                    <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mt-1">{s.label}</div>
                   </div>
+                ))}
+              </div>
+              {/* Activity */}
+              <div>
+                <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">Recent Activity</div>
+                <div className="space-y-3">
+                  {[
+                    { color: "#2ECC71", text: "Booked — Sarah M. → Fri 2:00 PM", time: "just now" },
+                    { color: "#6366F1", text: "Answered pricing question re: highlights", time: "4m ago" },
+                    { color: "#F59E0B", text: "Rescheduled — Emma L. → Thu 10:00 AM", time: "9m ago" },
+                    { color: "#2ECC71", text: "Booked — James T. → Sat 11:00 AM", time: "14m ago" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center justify-between gap-3 py-2 border-b border-border last:border-0">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                        <span className="text-sm text-foreground font-medium">{item.text}</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground shrink-0">{item.time}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
