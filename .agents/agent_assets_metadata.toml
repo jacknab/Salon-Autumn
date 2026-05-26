@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "oKXjVHKUX99ySoC1Ofr6n"
+uri = "file://artifacts/salon-ai/src/assets/images/autumn-portrait.png"
+type = "image"
+title = "Autumn Portrait"
+
+[[generated]]
+id = "6hwkIMS9L95BBzrXWCYsI"
+uri = "file://artifacts/salon-ai/src/assets/images/luxury-salon.png"
+type = "image"
+title = "Luxury Salon Interior"
+
+[[generated]]
+id = "oG4_UVm3VqAo72WEUlEjW"
+uri = "file://artifacts/salon-ai/src/assets/images/client-phone.png"
+type = "image"
+title = "Client on Phone"
