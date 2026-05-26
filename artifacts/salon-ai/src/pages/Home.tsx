@@ -463,9 +463,9 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { step: "01", title: "Connect", desc: "Link your Certxa account. Autumn instantly reads your team, services, pricing, and live availability — no manual entry." },
-                { step: "02", title: "Customize", desc: "Choose Autumn's voice and set any upsell preferences. She already knows the rest." },
-                { step: "03", title: "Go Live", desc: "Autumn starts answering every call immediately — booking, upselling, and handling questions 24/7." }
+                { step: "01", title: "Get Your Number", desc: "Certxa assigns you a dedicated Autumn phone number. Simply forward your salon's existing number to it — no new hardware, no contracts." },
+                { step: "02", title: "Customize", desc: "Choose Autumn's voice and set any upsell preferences. She already knows your team, services, and schedule from Certxa." },
+                { step: "03", title: "Go Live", desc: "Every call to your salon now goes to Autumn. She books, upsells, and handles questions 24/7 — automatically." }
               ].map((step, i) => (
                 <FadeIn key={i} delay={0.1 * i} className="relative">
                   <div className="bg-white border border-border shadow-sm rounded-2xl p-8 pt-12 relative z-10 h-full hover:shadow-md transition-shadow">
