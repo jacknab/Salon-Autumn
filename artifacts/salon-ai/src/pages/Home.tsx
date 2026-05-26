@@ -507,7 +507,7 @@ export default function Home() {
                 { label: "Hours Available", human: "Mon–Fri, 9–5", ai: "24 hours, 7 days", aiClass: "text-foreground font-bold" },
                 { label: "Calls Missed", human: "Yes", ai: "Never", aiClass: "text-[#2ECC71] font-bold" },
                 { label: "Response Time", human: "30s–2 min", ai: "< 2 seconds", aiClass: "text-foreground font-bold" },
-                { label: "Knows Your Schedule", human: "After training", ai: "Instantly via Certxa", aiClass: "text-primary font-bold" },
+                { label: "Training Required", human: "Weeks", ai: "None", aiClass: "text-[#2ECC71] font-bold" },
                 { label: "Upsells Add-ons", human: "Inconsistent", ai: "Every single call", aiClass: "text-[#2ECC71] font-bold" },
                 { label: "Consistency", human: "Variable", ai: "Always perfect", aiClass: "text-primary font-bold" },
               ].map((row, i) => (
