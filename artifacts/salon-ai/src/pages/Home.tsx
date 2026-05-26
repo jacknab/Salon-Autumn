@@ -260,7 +260,7 @@ export default function Home() {
             </FadeIn>
             <FadeIn delay={0.2}>
               <p className="text-lg md:text-xl text-muted-foreground font-medium mb-10 max-w-lg leading-relaxed">
-                Never miss another booking call. Autumn answers instantly, books appointments directly in your system, and sounds exactly like a real human.
+                Never miss another booking call. Autumn answers instantly, upsells add-ons on every call, and books directly into Certxa — already knowing your team, services, and availability from day one.
               </p>
             </FadeIn>
             <FadeIn delay={0.3}>
@@ -427,8 +427,8 @@ export default function Home() {
                   <Calendar className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">Books & reschedules</h3>
-                  <p className="text-muted-foreground font-medium">Handles the full appointment lifecycle seamlessly within your existing software.</p>
+                  <h3 className="text-xl font-bold text-foreground mb-2">Books, reschedules & upsells</h3>
+                  <p className="text-muted-foreground font-medium">Handles the full appointment lifecycle — and suggests relevant add-ons at the right moment, increasing your revenue per booking.</p>
                 </div>
               </FadeIn>
               <FadeIn delay={0.4} className="flex gap-5">
@@ -436,8 +436,8 @@ export default function Home() {
                   <MessageSquare className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">Answers questions</h3>
-                  <p className="text-muted-foreground font-medium">Pricing, availability, services, parking — she knows it all and explains it clearly.</p>
+                  <h3 className="text-xl font-bold text-foreground mb-2">Already knows your salon</h3>
+                  <p className="text-muted-foreground font-medium">Pulled live from Certxa — your team's availability, every service, every price, every policy. Zero setup required.</p>
                 </div>
               </FadeIn>
             </div>
@@ -463,9 +463,9 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { step: "01", title: "Connect", desc: "Link your salon's phone number to your Certxa.com account." },
-                { step: "02", title: "Customize", desc: "Set Autumn's voice, teach her your services, and add your policies." },
-                { step: "03", title: "Go Live", desc: "Autumn starts answering calls immediately, 24/7." }
+                { step: "01", title: "Connect", desc: "Link your Certxa account. Autumn instantly reads your team, services, pricing, and live availability — no manual entry." },
+                { step: "02", title: "Customize", desc: "Choose Autumn's voice and set any upsell preferences. She already knows the rest." },
+                { step: "03", title: "Go Live", desc: "Autumn starts answering every call immediately — booking, upselling, and handling questions 24/7." }
               ].map((step, i) => (
                 <FadeIn key={i} delay={0.1 * i} className="relative">
                   <div className="bg-white border border-border shadow-sm rounded-2xl p-8 pt-12 relative z-10 h-full hover:shadow-md transition-shadow">
@@ -507,8 +507,8 @@ export default function Home() {
                 { label: "Hours Available", human: "Mon–Fri, 9–5", ai: "24 hours, 7 days", aiClass: "text-foreground font-bold" },
                 { label: "Calls Missed", human: "Yes", ai: "Never", aiClass: "text-[#2ECC71] font-bold" },
                 { label: "Response Time", human: "30s–2 min", ai: "< 2 seconds", aiClass: "text-foreground font-bold" },
-                { label: "Sick Days", human: "Yes", ai: "No", aiClass: "text-foreground font-bold" },
-                { label: "Training Required", human: "Weeks", ai: "Minutes", aiClass: "text-foreground font-bold" },
+                { label: "Knows Your Schedule", human: "After training", ai: "Instantly via Certxa", aiClass: "text-primary font-bold" },
+                { label: "Upsells Add-ons", human: "Inconsistent", ai: "Every single call", aiClass: "text-[#2ECC71] font-bold" },
                 { label: "Consistency", human: "Variable", ai: "Always perfect", aiClass: "text-primary font-bold" },
               ].map((row, i) => (
                 <div key={i} className="grid grid-cols-3 border-b border-border last:border-0 hover:bg-muted/10 transition-colors">
@@ -533,12 +533,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: Calendar, title: "Intelligent Scheduling", desc: "Autumn finds the perfect slots across multiple stylists, handling complex timing rules seamlessly." },
-              { icon: Phone, title: "Always Answers", desc: "Never miss a booking because the salon was too busy or closed. Autumn is available 24/7." },
-              { icon: ShieldCheck, title: "Policy Enforcement", desc: "She politely but firmly communicates cancellation policies and secures deposits without the awkwardness." },
+              { icon: Calendar, title: "Live Schedule Awareness", desc: "Autumn reads your real-time Certxa calendar — every stylist, every slot — and books into it directly, with zero conflicts." },
+              { icon: Phone, title: "Always Answers", desc: "Never miss a booking because the salon was too busy or closed. Autumn is available 24/7, every day of the year." },
+              { icon: TrendingUp, title: "Upsells on Every Call", desc: "She naturally suggests relevant add-ons — a gloss after a color, a treatment after a cut — increasing your average ticket every time." },
               { icon: Clock, title: "Reschedules & Cancellations", desc: "When life happens, Autumn frees up your calendar instantly and fills the gap from the waitlist." },
               { icon: Volume2, title: "Natural Conversationalist", desc: "She pauses, listens, and responds with the natural cadence and warmth of a real human being." },
-              { icon: Sparkles, title: "Service Inquiries", desc: "She knows your pricing, your products, and your processes inside and out." }
+              { icon: Sparkles, title: "Zero Onboarding", desc: "Services, pricing, team, policies — all pulled from Certxa automatically. Autumn is ready to take calls the moment you connect." }
             ].map((feature, i) => (
               <FadeIn key={i} delay={0.05 * i}>
                 <div className="bg-white border border-border shadow-sm rounded-[2rem] p-8 h-full hover:shadow-md hover:-translate-y-1 transition-all duration-300">
@@ -561,9 +561,9 @@ export default function Home() {
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-widest">
               Exclusive Integration
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-foreground">Built exclusively for Certxa.com.</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-foreground">She lives inside Certxa.</h2>
             <p className="text-muted-foreground font-medium text-lg max-w-xl mx-auto mb-10">
-              Autumn is purpose-built for the Certxa booking platform. Deep, native integration — not a generic plugin.
+              Autumn isn't connected to your booking system — she <em>is</em> your booking system. Live schedule data, full team availability, every service and price, pulled in real time. No copy-pasting, no syncing, no lag.
             </p>
           </FadeIn>
           <FadeIn delay={0.1}>
