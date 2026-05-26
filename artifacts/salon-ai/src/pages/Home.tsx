@@ -272,7 +272,7 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { step: "01", title: "Connect", desc: "Link your salon's phone number and existing booking system." },
+                { step: "01", title: "Connect", desc: "Link your salon's phone number to your Certxa.com account." },
                 { step: "02", title: "Customize", desc: "Set Autumn's voice, teach her your services, and add your policies." },
                 { step: "03", title: "Go Live", desc: "Autumn starts answering calls immediately, 24/7." }
               ].map((step, i) => (
@@ -367,18 +367,39 @@ export default function Home() {
       <section className="py-24 px-6 md:px-12 bg-[#FAFAFA] border-y border-border">
         <div className="max-w-4xl mx-auto text-center">
           <FadeIn>
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-10 tracking-tight text-foreground">Works with your booking system.</h2>
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-widest">
+              Exclusive Integration
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-foreground">Built exclusively for Certxa.com.</h2>
+            <p className="text-muted-foreground font-medium text-lg max-w-xl mx-auto mb-10">
+              Autumn is purpose-built for the Certxa booking platform. Deep, native integration — not a generic plugin.
+            </p>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <div className="flex flex-wrap justify-center gap-3">
-              {["Phorest", "Zenoti", "Vagaro", "Mindbody", "Boulevard", "Square"].map((software, i) => (
-                <div key={i} className="px-6 py-3 bg-white border border-border rounded-full shadow-sm text-foreground font-bold text-sm">
-                  {software}
+            <div className="flex flex-col items-center gap-6">
+              <a
+                href="https://www.certxa.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-4 bg-white border-2 border-primary rounded-2xl shadow-lg px-10 py-5 hover:shadow-xl transition-shadow group"
+                data-testid="certxa-link"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-white" />
                 </div>
-              ))}
-              <div className="px-6 py-3 bg-muted border border-border rounded-full shadow-sm text-muted-foreground font-bold text-sm">
-                + 20 more
-              </div>
+                <div className="text-left">
+                  <div className="text-xl font-extrabold text-foreground group-hover:text-primary transition-colors">Certxa.com</div>
+                  <div className="text-sm text-muted-foreground font-medium">Official & only supported booking platform</div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-primary ml-2 group-hover:translate-x-1 transition-transform" />
+              </a>
+              <p className="text-sm text-muted-foreground font-medium">
+                Not on Certxa yet?{" "}
+                <a href="https://www.certxa.com" target="_blank" rel="noopener noreferrer" className="text-primary font-bold hover:underline">
+                  Get started at certxa.com
+                </a>
+                {" "}— Autumn works exclusively with their platform.
+              </p>
             </div>
           </FadeIn>
         </div>
