@@ -26,7 +26,8 @@ router.get("/phones/available", async (req, res) => {
     if (areaCode) params.areaCode = areaCode;
     if (contains) params.contains = contains;
 
-    const numbers = await client.availablePhoneNumbers("US").local.list(params as Parameters<typeof client.availablePhoneNumbers>[0]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const numbers = await client.availablePhoneNumbers("US").local.list(params as any);
 
     res.json(
       numbers.map((n) => ({

@@ -3,7 +3,7 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AI Receptionist SaaS Platform API
 servers:
   - url: /api
     description: Base API path
@@ -12,13 +12,25 @@ tags:
     description: Health operations
   - name: demo
     description: Demo signup operations
+  - name: phones
+    description: Phone provisioning operations
+  - name: packages
+    description: Billing package management
+  - name: businesses
+    description: Business (tenant) management
+  - name: calls
+    description: Call tracking and management
+  - name: analytics
+    description: Analytics and usage statistics
+  - name: billing
+    description: Stripe subscription billing management
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -26,12 +38,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
   /demo:
     post:
       operationId: registerDemo
       tags: [demo]
       summary: Register for a free demo
-      description: Stores the caller's phone number and returns the demo number to dial
       requestBody:
         required: true
         content:
@@ -52,45 +64,1081 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiError"
         "409":
-          description: Phone number already registered
+          description: Phone already registered
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiError"
+
+  /phones/available:
+    get:
+      operationId: getAvailablePhones
+      tags: [phones]
+      summary: List available Twilio phone numbers
+      parameters:
+        - name: areaCode
+          in: query
+          schema:
+            type: string
+        - name: contains
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of available numbers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AvailablePhone"
+
+  /phones/provision:
+    post:
+      operationId: provisionPhone
+      tags: [phones]
+      summary: Purchase and provision a phone number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProvisionPhoneInput"
+      responses:
+        "201":
+          description: Number provisioned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionedPhone"
+
+  /phones/salon/{salonId}:
+    get:
+      operationId: getSalonPhones
+      tags: [phones]
+      summary: Get all provisioned numbers for a salon
+      parameters:
+        - name: salonId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of provisioned numbers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProvisionedPhone"
+
+  /packages:
+    get:
+      operationId: listPackages
+      tags: [packages]
+      summary: List all billing packages
+      responses:
+        "200":
+          description: List of packages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Package"
+    post:
+      operationId: createPackage
+      tags: [packages]
+      summary: Create a new billing package
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PackageInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Package"
+
+  /packages/{id}:
+    get:
+      operationId: getPackage
+      tags: [packages]
+      summary: Get a billing package
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Package
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Package"
+        "404":
+          description: Not found
+    patch:
+      operationId: updatePackage
+      tags: [packages]
+      summary: Update a billing package
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PackageUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Package"
+        "404":
+          description: Not found
+    delete:
+      operationId: deletePackage
+      tags: [packages]
+      summary: Delete a billing package
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /businesses:
+    get:
+      operationId: listBusinesses
+      tags: [businesses]
+      summary: List all businesses
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListBusinessesStatus"
+      responses:
+        "200":
+          description: List of businesses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Business"
+    post:
+      operationId: createBusiness
+      tags: [businesses]
+      summary: Create a new business tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+
+  /businesses/lookup:
+    get:
+      operationId: lookupBusiness
+      tags: [businesses]
+      summary: Lookup a business by Twilio phone number
+      parameters:
+        - name: phone
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Business found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "404":
+          description: Not found
+
+  /businesses/{id}:
+    get:
+      operationId: getBusiness
+      tags: [businesses]
+      summary: Get a business
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Business
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateBusiness
+      tags: [businesses]
+      summary: Update a business
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteBusiness
+      tags: [businesses]
+      summary: Delete a business
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /businesses/{id}/usage:
+    get:
+      operationId: getBusinessUsage
+      tags: [businesses]
+      summary: Get usage summary for a business
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usage summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsageSummary"
+        "404":
+          description: Not found
+
+  /businesses/{id}/analytics:
+    get:
+      operationId: getBusinessAnalytics
+      tags: [businesses]
+      summary: Get detailed analytics for a business (last 30 days)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Business analytics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessAnalytics"
+        "404":
+          description: Not found
+
+  /businesses/{id}/billing-reset:
+    post:
+      operationId: resetBillingCycle
+      tags: [businesses]
+      summary: Reset billing cycle start date to now
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated business
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Business"
+        "404":
+          description: Not found
+
+  /businesses/{id}/enforcement:
+    get:
+      operationId: checkEnforcement
+      tags: [businesses]
+      summary: Check if a business is allowed to accept a new call
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Enforcement status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnforcementCheck"
+        "404":
+          description: Not found
+
+  /calls:
+    get:
+      operationId: listCalls
+      tags: [calls]
+      summary: List calls with optional filters
+      parameters:
+        - name: businessId
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of calls
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Call"
+    post:
+      operationId: createCall
+      tags: [calls]
+      summary: Record a new incoming call
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CallInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Call"
+
+  /calls/{id}:
+    get:
+      operationId: getCall
+      tags: [calls]
+      summary: Get a call record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Call record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Call"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateCall
+      tags: [calls]
+      summary: Update a call (finalize duration, add transcript)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CallUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Call"
+        "404":
+          description: Not found
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [analytics]
+      summary: Get overall platform statistics for admin
+      responses:
+        "200":
+          description: Platform stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [analytics]
+      summary: Get recent call activity across all businesses
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Recent activity feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CallActivity"
+
+  /businesses/{id}/subscription:
+    get:
+      operationId: getSubscription
+      tags: [billing]
+      summary: Get subscription info for a business
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Subscription info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionInfo"
+        "404":
+          description: Not found
+    post:
+      operationId: createSubscription
+      tags: [billing]
+      summary: Create a Stripe subscription for a business
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionInput"
+      responses:
+        "201":
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionInfo"
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+    delete:
+      operationId: cancelSubscription
+      tags: [billing]
+      summary: Cancel a Stripe subscription at period end
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Subscription set to cancel at period end
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionInfo"
+        "404":
+          description: Not found
+
+  /businesses/{id}/billing-portal:
+    get:
+      operationId: getBillingPortal
+      tags: [billing]
+      summary: Get a Stripe customer portal session URL
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Billing portal URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingPortalUrl"
+        "404":
+          description: Not found
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
+
     DemoSignupInput:
       type: object
-      required:
-        - phone
+      required: [phone]
       properties:
         phone:
           type: string
-          description: 10-digit US phone number (digits only)
           pattern: "^[0-9]{10}$"
+
     DemoSignupResult:
       type: object
-      required:
-        - demoNumber
-        - message
+      required: [demoNumber, message]
       properties:
         demoNumber:
           type: string
-          description: The phone number to dial for the 5-minute demo call
         message:
           type: string
-          description: Instructions for the demo
+
     ApiError:
       type: object
-      required:
-        - error
+      required: [error]
       properties:
         error:
           type: string
+
+    AvailablePhone:
+      type: object
+      required: [phoneNumber, friendlyName]
+      properties:
+        phoneNumber:
+          type: string
+        friendlyName:
+          type: string
+        locality:
+          type: ["string", "null"]
+        region:
+          type: ["string", "null"]
+
+    ProvisionPhoneInput:
+      type: object
+      required: [phoneNumber, salonId, storeId]
+      properties:
+        phoneNumber:
+          type: string
+        salonId:
+          type: string
+        storeId:
+          type: string
+
+    ProvisionedPhone:
+      type: object
+      required: [id, salonId, twilioSid, phoneNumber, friendlyName, webhookUrl, provisionedAt]
+      properties:
+        id:
+          type: integer
+        salonId:
+          type: string
+        twilioSid:
+          type: string
+        phoneNumber:
+          type: string
+        friendlyName:
+          type: string
+        webhookUrl:
+          type: string
+        provisionedAt:
+          type: string
+          format: date-time
+
+    Package:
+      type: object
+      required: [id, name, includedMinutes, monthlyPrice, overageRate, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        includedMinutes:
+          type: integer
+        monthlyPrice:
+          type: number
+        overageRate:
+          type: number
+        features:
+          type: array
+          items:
+            type: string
+        stripePriceId:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    PackageInput:
+      type: object
+      required: [name, includedMinutes, monthlyPrice, overageRate]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        includedMinutes:
+          type: integer
+          minimum: 0
+        monthlyPrice:
+          type: number
+          minimum: 0
+        overageRate:
+          type: number
+          minimum: 0
+        features:
+          type: array
+          items:
+            type: string
+        stripePriceId:
+          type: string
+
+    PackageUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        includedMinutes:
+          type: integer
+          minimum: 0
+        monthlyPrice:
+          type: number
+          minimum: 0
+        overageRate:
+          type: number
+          minimum: 0
+        features:
+          type: array
+          items:
+            type: string
+        stripePriceId:
+          type: ["string", "null"]
+
+    BusinessStatus:
+      type: string
+      enum: [active, suspended, trial]
+
+    BusinessInputStatus:
+      type: string
+      enum: [active, suspended, trial]
+
+    BusinessUpdateStatus:
+      type: string
+      enum: [active, suspended, trial]
+
+    ListBusinessesStatus:
+      type: string
+      enum: [active, suspended, trial]
+
+    Business:
+      type: object
+      required: [id, name, twilioNumber, status, packageId, billingCycleStart, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        twilioNumber:
+          type: string
+        status:
+          $ref: "#/components/schemas/BusinessStatus"
+        packageId:
+          type: integer
+        packageName:
+          type: ["string", "null"]
+        openaiPrompt:
+          type: ["string", "null"]
+        voicePersonality:
+          type: ["string", "null"]
+        billingCycleStart:
+          type: string
+          format: date-time
+        stripeCustomerId:
+          type: ["string", "null"]
+        stripeSubscriptionId:
+          type: ["string", "null"]
+        subscriptionStatus:
+          type: ["string", "null"]
+        subscriptionPeriodEnd:
+          type: ["string", "null"]
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    BusinessInput:
+      type: object
+      required: [name, twilioNumber, packageId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        twilioNumber:
+          type: string
+          minLength: 1
+        status:
+          $ref: "#/components/schemas/BusinessInputStatus"
+        packageId:
+          type: integer
+        openaiPrompt:
+          type: string
+        voicePersonality:
+          type: string
+        billingCycleStart:
+          type: string
+          format: date-time
+        stripeCustomerId:
+          type: string
+        stripeSubscriptionId:
+          type: string
+        subscriptionStatus:
+          type: string
+        subscriptionPeriodEnd:
+          type: string
+          format: date-time
+
+    BusinessUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        twilioNumber:
+          type: string
+          minLength: 1
+        status:
+          $ref: "#/components/schemas/BusinessUpdateStatus"
+        packageId:
+          type: integer
+        openaiPrompt:
+          type: ["string", "null"]
+        voicePersonality:
+          type: ["string", "null"]
+        billingCycleStart:
+          type: string
+          format: date-time
+        stripeCustomerId:
+          type: ["string", "null"]
+        stripeSubscriptionId:
+          type: ["string", "null"]
+        subscriptionStatus:
+          type: ["string", "null"]
+        subscriptionPeriodEnd:
+          type: ["string", "null"]
+          format: date-time
+
+    CallOutcome:
+      type: ["string", "null"]
+      enum: [booked, transferred, voicemail, ai_handled, null]
+
+    CallUpdateOutcome:
+      type: string
+      enum: [booked, transferred, voicemail, ai_handled]
+
+    Call:
+      type: object
+      required: [id, businessId, callerNumber, startedAt, createdAt]
+      properties:
+        id:
+          type: integer
+        businessId:
+          type: integer
+        businessName:
+          type: ["string", "null"]
+        callerNumber:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        endedAt:
+          type: ["string", "null"]
+          format: date-time
+        durationSeconds:
+          type: ["integer", "null"]
+        cost:
+          type: ["number", "null"]
+        transcript:
+          type: ["string", "null"]
+        recordingUrl:
+          type: ["string", "null"]
+        outcome:
+          $ref: "#/components/schemas/CallOutcome"
+        createdAt:
+          type: string
+          format: date-time
+
+    CallInput:
+      type: object
+      required: [businessId, callerNumber, startedAt]
+      properties:
+        businessId:
+          type: integer
+        callerNumber:
+          type: string
+          minLength: 1
+        startedAt:
+          type: string
+          format: date-time
+
+    CallUpdate:
+      type: object
+      properties:
+        endedAt:
+          type: string
+          format: date-time
+        durationSeconds:
+          type: integer
+          minimum: 0
+        cost:
+          type: number
+          minimum: 0
+        transcript:
+          type: string
+        recordingUrl:
+          type: string
+        outcome:
+          $ref: "#/components/schemas/CallUpdateOutcome"
+
+    UsageSummary:
+      type: object
+      required: [businessId, minutesUsed, minutesLimit, minutesRemaining, percentUsed, totalCalls, billingCycleStart]
+      properties:
+        businessId:
+          type: integer
+        minutesUsed:
+          type: integer
+        minutesLimit:
+          type: integer
+        minutesRemaining:
+          type: integer
+        percentUsed:
+          type: number
+        overageMinutes:
+          type: integer
+        overageCost:
+          type: number
+        totalCalls:
+          type: integer
+        billingCycleStart:
+          type: string
+          format: date-time
+
+    BusinessAnalytics:
+      type: object
+      required: [businessId, totalCalls, answeredCalls, bookedCalls, transferredCalls, voicemailCalls, avgCallDuration, afterHoursCalls, missedCallRecoveries, callsByDay]
+      properties:
+        businessId:
+          type: integer
+        totalCalls:
+          type: integer
+        answeredCalls:
+          type: integer
+        bookedCalls:
+          type: integer
+        transferredCalls:
+          type: integer
+        voicemailCalls:
+          type: integer
+        avgCallDuration:
+          type: number
+        afterHoursCalls:
+          type: integer
+        missedCallRecoveries:
+          type: integer
+        callsByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyCallCount"
+
+    DailyCallCount:
+      type: object
+      required: [date, count, minutes]
+      properties:
+        date:
+          type: string
+        count:
+          type: integer
+        minutes:
+          type: number
+
+    AdminStats:
+      type: object
+      required: [totalBusinesses, activeBusinesses, totalCallsToday, totalMinutesToday, totalRevenueMtd, topBusinesses]
+      properties:
+        totalBusinesses:
+          type: integer
+        activeBusinesses:
+          type: integer
+        totalCallsToday:
+          type: integer
+        totalMinutesToday:
+          type: integer
+        totalRevenueMtd:
+          type: number
+        topBusinesses:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessSummary"
+
+    BusinessSummary:
+      type: object
+      required: [id, name, callsThisMonth, minutesUsed]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        callsThisMonth:
+          type: integer
+        minutesUsed:
+          type: integer
+
+    EnforcementCheckReason:
+      type: string
+      enum: [ok, suspended, limit_exceeded]
+
+    EnforcementCheck:
+      type: object
+      required: [allowed, businessId, reason, status]
+      properties:
+        allowed:
+          type: boolean
+        businessId:
+          type: integer
+        reason:
+          $ref: "#/components/schemas/EnforcementCheckReason"
+        status:
+          type: string
+        minutesUsed:
+          type: integer
+        minutesLimit:
+          type: integer
+        percentUsed:
+          type: number
+
+    CallActivity:
+      type: object
+      required: [id, businessId, businessName, callerNumber, startedAt, durationSeconds, outcome]
+      properties:
+        id:
+          type: integer
+        businessId:
+          type: integer
+        businessName:
+          type: string
+        callerNumber:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        durationSeconds:
+          type: ["integer", "null"]
+        outcome:
+          type: ["string", "null"]
+
+    SubscriptionInfo:
+      type: object
+      required: [businessId, cancelAtPeriodEnd]
+      properties:
+        businessId:
+          type: integer
+        stripeCustomerId:
+          type: ["string", "null"]
+        stripeSubscriptionId:
+          type: ["string", "null"]
+        subscriptionStatus:
+          type: ["string", "null"]
+        subscriptionPeriodEnd:
+          type: ["string", "null"]
+          format: date-time
+        cancelAtPeriodEnd:
+          type: boolean
+
+    SubscriptionInput:
+      type: object
+      required: [stripePriceId]
+      properties:
+        stripePriceId:
+          type: string
+          minLength: 1
+
+    BillingPortalUrl:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+
