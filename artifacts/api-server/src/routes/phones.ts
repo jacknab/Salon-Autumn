@@ -45,18 +45,21 @@ router.get("/phones/available", async (req, res) => {
 });
 
 router.post("/phones/provision", async (req, res) => {
-  const { phoneNumber, salonId, friendlyName } = req.body ?? {};
+  const { phoneNumber, salonId, storeId, friendlyName } = req.body ?? {};
 
-  if (!phoneNumber || !salonId) {
-    res.status(400).json({ error: "phoneNumber and salonId are required" });
+  if (!phoneNumber || !salonId || !storeId) {
+    res.status(400).json({ error: "phoneNumber, salonId, and storeId are required" });
     return;
   }
 
-  const webhookUrl = process.env.TWILIO_VOICE_WEBHOOK_URL;
-  if (!webhookUrl) {
+  const baseWebhookUrl = process.env.TWILIO_VOICE_WEBHOOK_URL;
+  if (!baseWebhookUrl) {
     res.status(500).json({ error: "TWILIO_VOICE_WEBHOOK_URL is not configured" });
     return;
   }
+
+  // Append the booking store ID so Autumn knows which salon's data to load
+  const webhookUrl = `${baseWebhookUrl.replace(/\/$/, "")}/${storeId}`;
 
   try {
     const client = getClient();

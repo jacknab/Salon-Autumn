@@ -34,6 +34,7 @@ function formatDisplay(raw: string) {
 export default function PhonePicker() {
   const [areaCode, setAreaCode] = useState("");
   const [salonId, setSalonId] = useState("");
+  const [storeId, setStoreId] = useState("");
   const [numbers, setNumbers] = useState<AvailableNumber[]>([]);
   const [selected, setSelected] = useState<AvailableNumber | null>(null);
   const [searching, setSearching] = useState(false);
@@ -67,7 +68,7 @@ export default function PhonePicker() {
   };
 
   const provision = async () => {
-    if (!selected || !salonId.trim()) return;
+    if (!selected || !salonId.trim() || !storeId.trim()) return;
     setError("");
     setProvisioning(true);
     try {
@@ -77,6 +78,7 @@ export default function PhonePicker() {
         body: JSON.stringify({
           phoneNumber: selected.phoneNumber,
           salonId: salonId.trim(),
+          storeId: storeId.trim(),
           friendlyName: `Autumn — ${salonId.trim()}`,
         }),
       });
@@ -155,15 +157,31 @@ export default function PhonePicker() {
         {/* Step 1 — Salon ID */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
           className="bg-white rounded-[1.5rem] border border-border shadow-sm p-6 mb-4">
-          <h2 className="text-base font-extrabold text-foreground mb-1">Step 1 — Salon ID</h2>
-          <p className="text-sm text-muted-foreground font-medium mb-4">Enter your Certxa salon ID. This links the number to your account.</p>
-          <input
-            type="text"
-            value={salonId}
-            onChange={(e) => setSalonId(e.target.value)}
-            placeholder="e.g. luxe-salon-nyc"
-            className="w-full border border-border rounded-xl px-4 py-3 text-base font-semibold text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
-          />
+          <h2 className="text-base font-extrabold text-foreground mb-1">Step 1 — Salon Details</h2>
+          <p className="text-sm text-muted-foreground font-medium mb-4">Your Certxa salon ID and booking store ID. The store ID is appended to the voice webhook so Autumn loads the right salon's data.</p>
+          <div className="space-y-3">
+            <input
+              type="text"
+              value={salonId}
+              onChange={(e) => setSalonId(e.target.value)}
+              placeholder="Salon ID (e.g. luxe-salon-nyc)"
+              className="w-full border border-border rounded-xl px-4 py-3 text-base font-semibold text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+            />
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                value={storeId}
+                onChange={(e) => setStoreId(e.target.value.replace(/\D/g, ""))}
+                placeholder="Booking store ID (e.g. 7)"
+                className="w-full border border-border rounded-xl px-4 py-3 text-base font-semibold text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+              />
+            </div>
+            {salonId && storeId && (
+              <p className="text-xs text-muted-foreground font-medium bg-muted/40 rounded-lg px-3 py-2">
+                Webhook will be set to: <span className="font-mono text-foreground">…/api/voice/<strong>{storeId}</strong></span>
+              </p>
+            )}
+          </div>
         </motion.div>
 
         {/* Step 2 — Search */}
